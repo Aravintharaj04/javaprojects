@@ -1,0 +1,518 @@
+package com.pizzahut.main;
+
+public class PizzahutApp {
+
+	public static void main(String[] args) {
+		// TODO Auto-generated method stub
+		System.out.println("Welcome to Pizza hut");
+		Menu m = new Menu();
+		m.menu();
+
+	}
+
+}
+
+package com.pizzahut.main;
+
+import java.util.*;
+
+public class Menu {
+	Scanner sc = new Scanner(System.in);
+	VegPizza vp = new VegPizza();
+	NonVegPizza np = new NonVegPizza();
+	Toppings topping = new Toppings();
+	CrustType crust = new CrustType();
+	Order o = new Order();
+	Size s = new Size();
+	int vegPizzaRate, nonVegPizzaRate, sizeRate, crustRate;
+	String pizzaName, crustName, size, pizzaType;
+	int count = 0;
+
+	public void menu() {
+		System.out.println("Select VegPizza(1) or NonVegPizza(2)");
+		try {
+			int choice = sc.nextInt();
+			if (choice == 1) {
+				pizzaType = "veg";
+				vp.vegPizzaMenu();
+				vp.getVegPizzaType();
+				pizzaName = vp.getVegPizza();
+				vegPizzaRate = vp.getPizza_rate();
+			} else if (choice == 2) {
+				pizzaType = "non-veg";
+				np.nonVegPizzaMenu();
+				pizzaName = np.getNonVegPizzaType();
+				nonVegPizzaRate = np.getNonVeg_Pizza_rate();
+			}
+		} catch (Exception e) {
+			System.out.println("Selected wrong option");
+			sc.next();
+			menu();
+		}
+		System.out.println("\nDo you want to customize topping");
+		System.out.println("Yes (y) or No(n)");
+		do {
+			try {
+
+				String custom = sc.next();
+				if (custom.equalsIgnoreCase("y")) {
+					if (pizzaType.equals("veg"))
+						topping.customizeTopping(vp.top.customTopping);
+					else
+						topping.customizeTopping(np.top.customTopping);
+				} else if (custom.equalsIgnoreCase("n")) {
+					System.out.println("Your crust types:");
+				} else {
+					System.out
+							.println("Choosed wrong option,Select correct option");
+					count++;
+				}
+
+			} catch (Exception e) {
+				System.out.println("Wrong input,try again");
+				sc.next();
+				count++;
+			}
+		} while (count != 0);
+		System.out.println("Select your crust type");
+		crust.Crust();
+		crustName = crust.getCrust();
+		crustRate = crust.getCrustRate();
+		s.sizeType();
+		size = s.getSize();
+		sizeRate = s.getSizePrice();
+		o.order(vegPizzaRate, nonVegPizzaRate, crustRate, sizeRate,
+				vp.top.customTopping);
+		o.orderSummary(pizzaName, crustName, size, vp.top.customTopping,
+				np.top.customTopping);
+	}
+
+}
+
+package com.pizzahut.main;
+
+import java.util.*;
+
+public class VegPizza {
+	public String VegPizza;
+	int Pizza_rate;
+	Toppings top = new Toppings();
+	Scanner sc = new Scanner(System.in);
+
+	public void vegPizzaMenu() {
+		System.out.println("\nPlease Select your Veg Pizza");
+		System.out.print("1.Deluxe_Veggie: \tToppings");
+		System.out.println(top.vegTopping().subList(0, 5));
+		System.out.print("2.Panner Pizza: \tToppings");
+
+		System.out.println(top.vegTopping().subList(1, 6));
+		System.out.print("3.Veg Extravaganza: \tToppings");
+
+		System.out.println(top.vegTopping().subList(3, 8));
+		System.out.print("4.Cheeseburst: \t\tToppings");
+
+		System.out.println(top.vegTopping().subList(4, 8));
+	}
+
+	public void getVegPizzaType() {
+		
+
+		try {
+			int choice = sc.nextInt();
+
+			switch (choice) {
+			case 1:
+				setVegPizza("Deluxe_Veggie");
+				setPizza_rate(350);
+				top.customTopping.addAll(top.vegTopping().subList(0, 5));
+				break;
+
+			case 2:
+				setVegPizza("Panner_Pizza");
+				setPizza_rate(450);
+				top.customTopping.addAll(top.vegTopping().subList(1, 6));
+				break;
+
+			case 3:
+				setVegPizza("Veg_Extravaganza");
+				setPizza_rate(550);
+				top.customTopping.addAll(top.vegTopping().subList(3, 8));
+				break;
+
+			case 4:
+				setVegPizza("Cheeseburst");
+				setPizza_rate(650);
+				top.customTopping.addAll(top.vegTopping().subList(4, 8));
+				break;
+			default:
+				System.out
+						.println("Your had entered wrong option,Please try again");
+				getVegPizzaType();
+			}
+		} catch (Exception e) {
+			System.out
+					.println("Your had entered wrong option,Please try again");
+			sc.next();
+			getVegPizzaType();
+		}
+	}
+
+	public int getPizza_rate() {
+		return Pizza_rate;
+	}
+
+	public void setPizza_rate(int pizza_rate) {
+		Pizza_rate = pizza_rate;
+	}
+
+	public String getVegPizza() {
+		return VegPizza;
+	}
+
+	public void setVegPizza(String vegPizza) {
+		this.VegPizza = vegPizza;
+	}
+
+}
+
+package com.pizzahut.main;
+
+import java.util.*;
+
+public class NonVegPizza {
+	public String nonVegPizza, Chicken_Supreme, Chicken_Tikka,
+			BBQ_Chicken_Pizza, Chicken_Deluxe;
+	public int nonVeg_Pizza_rate;
+
+	Toppings top = new Toppings();
+	Scanner sc = new Scanner(System.in);
+
+	public void nonVegPizzaMenu() {
+		System.out.println("\nPlease Select your Non-Veg Pizza");
+		System.out.print("1.Chicken Supreme: \tToppings");
+		System.out.println(top.nonVegTopping().subList(0, 5));
+		System.out.print("2.Chicken Tikka: \tToppings");
+
+		System.out.println(top.nonVegTopping().subList(1, 6));
+		System.out.print("3.BBQ Chicken Pizza: \tToppings");
+
+		System.out.println(top.nonVegTopping().subList(3, 8));
+		System.out.print("4.Chicken Deluxe: \tToppings");
+
+		System.out.println(top.nonVegTopping().subList(4, 8));
+	}
+
+	public String getNonVegPizzaType() {
+
+		
+		try {
+			int choice = sc.nextInt();
+
+			switch (choice) {
+			case 1:
+				setNonVegPizza("Chicken_Supreme");
+				setNonVeg_Pizza_rate(350);
+				top.customTopping.addAll(top.nonVegTopping().subList(0, 5));
+				break;
+			case 2:
+				setNonVegPizza("Chicken_Tikka");
+				setNonVeg_Pizza_rate(450);
+				top.customTopping.addAll(top.nonVegTopping().subList(1, 6));
+				break;
+
+			case 3:
+				setNonVegPizza("BBQ_Chicken_Pizza");
+				setNonVeg_Pizza_rate(550);
+				top.customTopping.addAll(top.nonVegTopping().subList(3, 8));
+				break;
+
+			case 4:
+				setNonVegPizza("Chicken_Deluxe");
+				setNonVeg_Pizza_rate(650);
+				top.customTopping.addAll(top.nonVegTopping().subList(4, 8));
+				break;
+
+			default:
+				System.out
+						.println("Your had entered wrong option,Please try again");
+				getNonVegPizzaType();
+			}
+		} catch (Exception e) {
+			System.out
+					.println("Your had entered wrong option,Please try again");
+			sc.next();
+			getNonVegPizzaType();
+		}
+		return nonVegPizza;
+	}
+
+	public int getNonVeg_Pizza_rate() {
+		return nonVeg_Pizza_rate;
+	}
+
+	public void setNonVeg_Pizza_rate(int nonVeg_Pizza_rate) {
+		this.nonVeg_Pizza_rate = nonVeg_Pizza_rate;
+	}
+
+	public String getNonVegPizza() {
+		return nonVegPizza;
+	}
+
+	public void setNonVegPizza(String nonVegPizza) {
+		this.nonVegPizza = nonVegPizza;
+	}
+}
+
+package com.pizzahut.main;
+
+import java.util.*;
+
+public class NonVegPizza {
+	public String nonVegPizza, Chicken_Supreme, Chicken_Tikka,
+			BBQ_Chicken_Pizza, Chicken_Deluxe;
+	public int nonVeg_Pizza_rate;
+
+	Toppings top = new Toppings();
+	Scanner sc = new Scanner(System.in);
+
+	public void nonVegPizzaMenu() {
+		System.out.println("\nPlease Select your Non-Veg Pizza");
+		System.out.print("1.Chicken Supreme: \tToppings");
+		System.out.println(top.nonVegTopping().subList(0, 5));
+		System.out.print("2.Chicken Tikka: \tToppings");
+
+		System.out.println(top.nonVegTopping().subList(1, 6));
+		System.out.print("3.BBQ Chicken Pizza: \tToppings");
+
+		System.out.println(top.nonVegTopping().subList(3, 8));
+		System.out.print("4.Chicken Deluxe: \tToppings");
+
+		System.out.println(top.nonVegTopping().subList(4, 8));
+	}
+
+	public String getNonVegPizzaType() {
+
+		
+		try {
+			int choice = sc.nextInt();
+
+			switch (choice) {
+			case 1:
+				setNonVegPizza("Chicken_Supreme");
+				setNonVeg_Pizza_rate(350);
+				top.customTopping.addAll(top.nonVegTopping().subList(0, 5));
+				break;
+			case 2:
+				setNonVegPizza("Chicken_Tikka");
+				setNonVeg_Pizza_rate(450);
+				top.customTopping.addAll(top.nonVegTopping().subList(1, 6));
+				break;
+
+			case 3:
+				setNonVegPizza("BBQ_Chicken_Pizza");
+				setNonVeg_Pizza_rate(550);
+				top.customTopping.addAll(top.nonVegTopping().subList(3, 8));
+				break;
+
+			case 4:
+				setNonVegPizza("Chicken_Deluxe");
+				setNonVeg_Pizza_rate(650);
+				top.customTopping.addAll(top.nonVegTopping().subList(4, 8));
+				break;
+
+			default:
+				System.out
+						.println("Your had entered wrong option,Please try again");
+				getNonVegPizzaType();
+			}
+		} catch (Exception e) {
+			System.out
+					.println("Your had entered wrong option,Please try again");
+			sc.next();
+			getNonVegPizzaType();
+		}
+		return nonVegPizza;
+	}
+
+	public int getNonVeg_Pizza_rate() {
+		return nonVeg_Pizza_rate;
+	}
+
+	public void setNonVeg_Pizza_rate(int nonVeg_Pizza_rate) {
+		this.nonVeg_Pizza_rate = nonVeg_Pizza_rate;
+	}
+
+	public String getNonVegPizza() {
+		return nonVegPizza;
+	}
+
+	public void setNonVegPizza(String nonVegPizza) {
+		this.nonVegPizza = nonVegPizza;
+	}
+}
+
+package com.pizzahut.main;
+
+import java.util.*;
+
+public class CrustType {
+	public String crustType;
+	int crustRate;
+	int count = 1;
+	List<String> crust = new ArrayList<String>();
+	Scanner sc = new Scanner(System.in);
+
+	public List<String> Crust() {
+
+		crust.add(0, "New_Hand_Tossed");
+		crust.add(1, "Wheat_Thin_Crust");
+		crust.add(2, "Cheese_Burst");
+		crust.add(3, "Fresh_Pan_Pizza");
+		crust.add(4, "Classic_Hand_Tossed");
+		Iterator<String> i = crust.iterator();
+		while (i.hasNext()) {
+			System.out.println(count + " " + i.next());
+			count++;
+		}
+		return crust;
+	}
+
+	public String getCrust() {
+		try {
+			int choice = sc.nextInt();
+			switch (choice) {
+			case 1:
+				setCrustType(crust.get(0));
+				setCrustRate(30);
+				break;
+			case 2:
+				setCrustType(crust.get(1));
+				setCrustRate(20);
+				break;
+			case 3:
+				setCrustType(crust.get(2));
+				setCrustRate(10);
+				break;
+			case 4:
+				setCrustType(crust.get(3));
+				setCrustRate(30);
+				break;
+			case 5:
+				setCrustType(crust.get(4));
+				setCrustRate(40);
+				break;
+			default:
+				System.out.println("Wrong entry");
+				getCrust();
+			}
+		} catch (Exception e) {
+			System.out.println("You had entered wrong option,please check");
+			sc.next();
+			getCrust();
+		}
+		return crustType;
+	}
+
+	public int getCrustRate() {
+		return crustRate;
+	}
+
+	public void setCrustRate(int crustRate) {
+		this.crustRate = crustRate;
+	}
+
+	public String getCrustType() {
+		return crustType;
+	}
+
+	public void setCrustType(String crustType) {
+		this.crustType = crustType;
+	}
+
+}
+
+package com.pizzahut.main;
+
+import java.util.*;
+
+public class Size {
+	Scanner sc = new Scanner(System.in);
+	public String size, regular, medium, large;
+	int sizePrice;
+
+	public void sizeType() {
+		System.out.println("Select your size");
+		System.out.println("1.Regular");
+		System.out.println("2.Medium");
+		System.out.println("3.Large");
+		try {
+			int choice = sc.nextInt();
+			switch (choice) {
+			case 1:
+				setSize("regular");
+				setSizePrice(0);
+				break;
+			case 2:
+				setSize("medium");
+				setSizePrice(20);
+				break;
+			case 3:
+				setSize("large");
+				setSizePrice(50);
+				break;
+			default:
+				System.out.println("Please enter correct option");
+				sizeType();
+			}
+		} catch (Exception e) {
+			System.out.println("Please enter correct option");
+			sc.next();
+			sizeType();
+		}
+
+	}
+
+	public int getSizePrice() {
+		return sizePrice;
+	}
+
+	public void setSizePrice(int sizePrice) {
+		this.sizePrice = sizePrice;
+	}
+
+	public String getSize() {
+		return size;
+	}
+
+	public void setSize(String size) {
+		this.size = size;
+	}
+
+}
+
+package com.pizzahut.main;
+
+import java.util.*;
+
+public class Order {
+	float totalamount;
+
+	public void order(int vegPizzaRate, int nonVegPizzaRate, float crustRate,
+			int sizeRate, List<String> customTopping) {
+		totalamount = vegPizzaRate + crustRate + sizeRate + nonVegPizzaRate;
+	}
+
+	public void orderSummary(String pizzaName, String crustName, String size,
+			List<String> customTopping, List<String> customTop) {
+		System.out.println("Order Summary:");
+		System.out.println("Item: " + pizzaName);
+		if (customTopping.isEmpty()) {
+			System.out.println("Topping: " + customTop);
+		} else {
+			System.out.println("Topping: " + customTopping);
+		}
+		System.out.println("Crust: " + crustName);
+		System.out.println("Size: " + size);
+		System.out.println("TotalAmount: " + totalamount);
+	}
+}
