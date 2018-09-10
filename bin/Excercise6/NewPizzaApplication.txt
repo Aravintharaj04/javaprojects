@@ -1,0 +1,446 @@
+package com.pizzahut.main;
+import com.pizzahut.model.CrustType;
+import com.pizzahut.model.Order;
+import com.pizzahut.model.PizzaType;
+import com.pizzahut.model.Topping;
+import com.pizzahut.model.Pizza;
+import com.pizzahut.model.PizzaSize;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.InputMismatchException;
+import java.util.Iterator;
+import java.util.Scanner;
+import java.util.List;
+import java.util.Map;
+
+
+public class PizzahutApp {
+	public static Scanner sc=new Scanner(System.in);
+	public static List<Topping> toppings;
+	public static List<Topping> newToppings;
+	public static List<Topping> alternateToppings;
+	public static PizzaSize size;
+	public static PizzaType type;
+	public static CrustType crust;
+	public static int choice;
+	public static int count;
+	public static void main(String[] args) {
+		toppings=loadToppings();
+		alternateToppings=loadAlternateToppings();
+		String name=greeting();
+		new Order(name);
+		showMenu();
+		System.out.println(pizzaOrder());
+	}
+	private static String greeting(){
+		System.out.println("Welcome To Pizzahut, Please enter your name to register");
+		String name=sc.next();
+		return name;
+	}
+	private static void showMenu(){
+		System.out.println("Pizza Types:"+PizzaType.VEG+" & "+PizzaType.NON_VEG );
+		type=getPizzaType();
+		showPizzaList(type);
+	}
+	private static Pizza pizzaOrder(){
+		 choice=sc.nextInt();
+		 switch(choice){
+			 case 1:if(type.equals(PizzaType.VEG))newToppings=toppings.subList(0,4);else newToppings=toppings.subList(8,11);break;
+			 case 2:if(type.equals(PizzaType.VEG))newToppings=toppings.subList(2,6);else newToppings=toppings.subList(9,12);break;
+			 case 3:if(type.equals(PizzaType.VEG))newToppings=toppings.subList(1,5);else newToppings=toppings.subList(10,13);break;
+			 case 4:if(type.equals(PizzaType.VEG))newToppings=toppings.subList(3,7);else newToppings=toppings.subList(9,13);break;
+			 default:System.out.println("Please choose correct option");
+			 		pizzaOrder();
+		 }
+		 if(choice==1&&type.equals(PizzaType.NON_VEG)){
+			 choice=5;
+		 }else if(choice==2&&type.equals(PizzaType.NON_VEG)){
+			 choice=6;
+		 }else if(choice==3&&type.equals(PizzaType.NON_VEG)){
+			 choice=7;
+		 }else if(choice==4&&type.equals(PizzaType.NON_VEG)){
+			 choice=8;
+		 }
+		
+		 customizeTopping(newToppings);
+		 crust=getCrustType();
+		 size=getPizzaSize();
+		 Pizza pizza=new Pizza(type,pizzaList().get(choice-1),newToppings,crust,size);
+		 
+		return pizza;
+	}
+	private static List<String> pizzaList(){
+		List<String> pizza=new ArrayList<>();
+		pizza.add("Deluxe_Veggie");
+		pizza.add("Panner Pizza");
+		pizza.add("Veg Extravaganza");
+		pizza.add("Cheeseburst");
+		pizza.add("Chicken Supreme");
+		pizza.add("Chicken Tikka");
+		pizza.add("BBQ Chicken Pizza");
+		pizza.add("Chicken Deluxe");
+		return pizza;
+	}
+	private static List<Topping> loadAlternateToppings(){
+		List<Topping> alternateTopping=new ArrayList<>();
+		alternateTopping.add(new Topping("burst",PizzaType.VEG));
+		alternateTopping.add(new Topping("v",PizzaType.VEG));
+		alternateTopping.add(new Topping("d",PizzaType.VEG));
+		alternateTopping.add(new Topping("e",PizzaType.VEG));
+		return alternateTopping;
+	}
+	
+	private static void showPizzaList(PizzaType type){
+		if(type.equals(PizzaType.VEG)){
+			System.out.print("1."+pizzaList().get(0) +"\t\tToppings");
+			System.out.println(toppings.subList(0,4));
+			System.out.print("2."+pizzaList().get(1)+" \t\tToppings");
+			System.out.println(toppings.subList(2,6));
+			System.out.print("3."+pizzaList().get(2)+" \tToppings");
+			System.out.println(toppings.subList(1,5));
+			System.out.print("4."+pizzaList().get(3)+"\t\tToppings");
+			System.out.println(toppings.subList(3,7));
+
+		}else if(type.equals(PizzaType.NON_VEG)){
+			System.out.print("1."+pizzaList().get(4)+" \tToppings");
+			System.out.println(toppings.subList(8, 11));
+			System.out.print("2."+pizzaList().get(5)+" \tToppings");
+			System.out.println(toppings.subList(9, 12));
+			System.out.print("3."+pizzaList().get(6)+" \tToppings");
+			System.out.println(toppings.subList(10,13));
+			System.out.print("4."+pizzaList().get(7)+" \tToppings");
+			System.out.println(toppings.subList(9,13));
+		}
+		else{
+			System.out.println("Pizzatype is not choosed");
+		}
+		
+	}
+	private static List<Topping> loadToppings(){
+		List<Topping> topping = new ArrayList<>();
+		topping.add((new Topping("onion",PizzaType.VEG)));
+		topping.add((new Topping("capsicum",PizzaType.VEG)));
+		topping.add((new Topping("grilled",PizzaType.VEG)));
+		topping.add((new Topping("mushroom",PizzaType.VEG)));
+		topping.add((new Topping("corn",PizzaType.VEG)));
+		topping.add((new Topping("Roasted Garlic",PizzaType.VEG)));
+		topping.add((new Topping("Pepproni",PizzaType.VEG)));
+		topping.add((new Topping("Green olives",PizzaType.VEG)));
+		
+		topping.add((new Topping("BBQ",PizzaType.NON_VEG)));
+		topping.add((new Topping("garlic chicken",PizzaType.NON_VEG)));
+		topping.add((new Topping("Roasted Red Peppers",PizzaType.NON_VEG)));
+		topping.add((new Topping("Pepper chicken",PizzaType.NON_VEG)));
+		topping.add((new Topping("Hot banana Peppers",PizzaType.NON_VEG)));
+		topping.add((new Topping("grilled chicken",PizzaType.NON_VEG)));
+		return topping;
+		
+	}
+	private static PizzaSize getPizzaSize(){
+		int count = 0;
+		System.out.println("Select Base : (1) for Small, (2) for Medium, (3) for Large");
+		String base = null;
+
+		Map<String, PizzaSize> mapValue = new HashMap<>();
+		mapValue.put("1", PizzaSize.REGULAR);
+		mapValue.put("2", PizzaSize.MEDIUM);
+		mapValue.put("3", PizzaSize.LARGE);
+
+		do {
+			base = sc.nextLine();
+			if (!mapValue.keySet().contains(base)) {
+				if (count >= 3) {
+					System.out.println("Exiting System ! You notorious User");
+					System.exit(0);
+				} else {
+					count++;
+					System.out.println("Please enter correct value");
+				}
+
+			} else {
+				break;
+			}
+		} while (count < 4);
+
+		return mapValue.get(base);
+	}
+	private static CrustType getCrustType() {
+		int count = 0;
+		System.out.println("Select Base : (1) for CheeseBurst, (2) for THICKCRUST, (3) for Thin, (4) for HandTossed");
+		String crust = null;
+
+		Map<String,CrustType> mapValue = new HashMap<>();
+		mapValue.put("1", CrustType.CHEESEBURST);
+		mapValue.put("2", CrustType.THICKCRUST);
+		mapValue.put("3", CrustType.THINCRUST);
+		mapValue.put("4", CrustType.HANDTOAST);
+
+		do {
+			crust = sc.nextLine();
+			if (!mapValue.keySet().contains(crust)) {
+				if (count >= 3) {
+					System.out.println("Exiting System ! You notorious User");
+					System.exit(0);
+				} else {
+					count++;
+					System.out.println("Please enter correct value");
+				}
+
+			} else {
+				break;
+			}
+		} while (count < 4);
+
+		return mapValue.get(crust);
+	}
+
+	private static void customizeTopping(List<Topping> newToppings) {
+		System.out.println(" Replace one existing topping and add new topping press(1) or no need press(2)");
+		count=1;
+		try{
+		 int select = sc.nextInt() ;
+		
+		  if(select==1){
+
+			System.out.println("Which topping you want to remove");
+			System.out.println("select 1 to "+newToppings.size());
+			Iterator<Topping> i=newToppings.iterator();
+			while(i.hasNext()){
+				System.out.println(count+" "+i.next());
+				count++;
+			}
+			
+			do{
+			try{
+			int choice1=sc.nextInt();
+			if(choice1==1||choice1==2||choice1==3||choice1==4){
+				addRemoveTopping(newToppings.get(choice1-1),newToppings);
+				break;
+			}else{
+				System.out.println("Please select correct option");
+				count++;
+			}}catch(Exception e){
+				System.out.println("You entered wrong option,please enter correct option");
+				sc.next();}}while(count!=1);
+			
+			
+			System.out.println("Select the alternate topping from the list");
+			Iterator<Topping> a=alternateToppings.iterator();
+			count=1;
+			while(a.hasNext()){
+				System.out.println(count+" "+a.next());
+				count++;
+			}
+			int choice2 = sc.nextInt();
+			
+			addRemoveTopping(alternateToppings.get(choice2-1),newToppings);
+		}else{
+			System.out.println("You entered wrong option,re-enter your option");
+			customizeTopping(newToppings);
+		}
+		
+		}catch(InputMismatchException e){
+			System.out.println("You entered wrong option,re-enter your option");
+			sc.next();
+			customizeTopping(newToppings);
+		}
+
+	}
+ private static void addRemoveTopping(Topping topping,List<Topping> customTopping) {
+		
+		if (customTopping.contains(topping)) {
+			customTopping.remove(topping);
+			System.out.println(customTopping);
+		} else {
+			customTopping.add(topping);
+			System.out.println(customTopping);
+		}
+	}
+	private static PizzaType getPizzaType() {
+		int count = 0;
+		System.out.println("Select : (1) for VEG and (2) for Non VEG");
+		String type = null;
+
+		Map<String, PizzaType> mapValue = new HashMap<>();
+		mapValue.put("1", PizzaType.VEG);
+		mapValue.put("2", PizzaType.NON_VEG);
+
+		do {
+			type = sc.nextLine();
+			if (!mapValue.keySet().contains(type) ){
+				if (count >= 3) {
+					System.out.println("You selected more than 3 times, Pizza order terminated");
+					System.exit(0);
+				} else {
+					count++;
+					System.out.println("Please enter correct value");
+				}
+
+			} else {
+				break;
+			}
+		} while (count < 4);
+
+		return mapValue.get(type);
+	}
+}
+
+
+------------------------------------------------------------------------------------------------------------
+
+package com.pizzahut.model;
+import java.util.concurrent.ThreadLocalRandom;
+public class Order {
+
+	public String name;
+	public String orderId;
+	
+	public Order(String name) {
+		super();
+		this.name = name;
+		this.orderId =String.valueOf(ThreadLocalRandom.current().nextInt(1,1000));
+	}
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	public String getOrderId() {
+		return orderId;
+	}
+
+	public void setOrderId(String orderId) {
+		this.orderId = orderId;
+	}
+	
+}
+
+
+-------------------------------------------------------------------------------------------------------------
+
+package com.pizzahut.model;
+
+import java.util.List;
+
+public class Pizza {
+	private PizzaType type;
+	private String name;
+	private List<Topping> toppings;
+	private CrustType crust;
+	private PizzaSize size;
+	
+	public Pizza(PizzaType type,String name,List<Topping> toppings,CrustType crust,PizzaSize size) {
+		super();
+		this.type = type;
+		this.name=name;
+		this.toppings=toppings;
+		this.crust=crust;
+		this.size=size;
+	}
+	public CrustType getCrust() {
+		return crust;
+	}
+
+	public void setCrust(CrustType crust) {
+		this.crust = crust;
+	}
+
+	public PizzaSize getSize() {
+		return size;
+	}
+
+	public void setSize(PizzaSize size) {
+		this.size = size;
+	}
+
+	public PizzaType getType() {
+		return type;
+	}
+
+	public void setType(PizzaType type) {
+		this.type = type;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+	
+	public List<Topping> getToppings() {
+		return toppings;
+	}
+
+	public void setToppings(List<Topping> toppings) {
+		this.toppings = toppings;
+	}
+	public String toString(){
+		return type.toString()+" "+name+" "+toppings+" "+crust+" "+size;
+	}
+
+}
+
+-------------------------------------------------------------------------------------------------------------
+
+package com.pizzahut.model;
+
+public enum PizzaType {
+	VEG,NON_VEG;
+}
+
+----------------------------------------------------------------------------------------------------
+
+package com.pizzahut.model;
+
+
+public class Topping {
+	private String name;
+	private PizzaType type;
+	
+	public Topping(String name, PizzaType type) {
+		super();
+		this.name=name;
+		this.type = type;
+	}
+	public String getName() {
+		return name;
+	}
+
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	
+	public PizzaType getType() {
+		return type;
+	}
+	public void setType(PizzaType type) {
+		this.type = type;
+	}
+	public String toString(){
+		return name;
+	}
+}
+
+----------------------------------------------------------------------------------------------------------
+
+package com.pizzahut.model;
+
+public enum PizzaSize {
+	REGULAR,MEDIUM,LARGE;
+}
+
+----------------------------------------------------------------------------------------------------------
+
+package com.pizzahut.model;
+
+public enum CrustType {
+	CHEESEBURST,THICKCRUST,THINCRUST,HANDTOAST;
+}
