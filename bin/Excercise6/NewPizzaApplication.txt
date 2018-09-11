@@ -1,5 +1,6 @@
 package com.pizzahut.main;
 import com.pizzahut.model.CrustType;
+
 import com.pizzahut.model.Order;
 import com.pizzahut.model.PizzaType;
 import com.pizzahut.model.Topping;
@@ -21,17 +22,24 @@ public class PizzahutApp {
 	public static List<Topping> newToppings;
 	public static List<Topping> alternateToppings;
 	public static PizzaSize size;
+	public static Map<PizzaSize,Double> sizeRates;
 	public static PizzaType type;
 	public static CrustType crust;
+	public static Map<CrustType,Double> crustRates;
+	public static double pizzaRate;
 	public static int choice;
 	public static int count;
 	public static void main(String[] args) {
 		toppings=loadToppings();
 		alternateToppings=loadAlternateToppings();
+		sizeRates=loadPizzaSizeRates();
+		crustRates=loadCrustRates();
 		String name=greeting();
-		new Order(name);
+		Order order=new Order(name);
 		showMenu();
-		System.out.println(pizzaOrder());
+		Pizza pizza=pizzaOrder();
+		order.getPizzaList().add(pizza);
+		System.out.println("TotalAmount: "+calculateBill(order));
 	}
 	private static String greeting(){
 		System.out.println("Welcome To Pizzahut, Please enter your name to register");
@@ -43,26 +51,43 @@ public class PizzahutApp {
 		type=getPizzaType();
 		showPizzaList(type);
 	}
+	
+private static double calculateBill(Order order) {
+		
+		double amount = 0;
+		for(Pizza p : order.getPizzaList())
+		{
+			amount= amount + crustRates.get(p.getCrust())+sizeRates.get(p.getSize())+pizzaRate;
+		}
+		return amount;
+	}
+
+
+	private static int loadNewToppings(int choice){
+		 switch(choice){
+		 case 1:if(type.equals(PizzaType.VEG)){newToppings=toppings.subList(0,4);pizzaRate=340;}else{ newToppings=toppings.subList(8,11);pizzaRate=400;}break;
+		 case 2:if(type.equals(PizzaType.VEG)){newToppings=toppings.subList(2,6);pizzaRate=440;}else{ newToppings=toppings.subList(9,12);pizzaRate=340;}break;
+		 case 3:if(type.equals(PizzaType.VEG)){newToppings=toppings.subList(1,5);pizzaRate=360;}else {newToppings=toppings.subList(10,13);pizzaRate=440;}break;
+		 case 4:if(type.equals(PizzaType.VEG)){newToppings=toppings.subList(3,7);pizzaRate=490;}else{ newToppings=toppings.subList(9,13);pizzaRate=640;}break;
+		 default:System.out.println("Please choose correct option");
+		 		pizzaOrder();
+	 }
+	 if(choice==1&&type.equals(PizzaType.NON_VEG)){
+		 choice=5;
+	 }else if(choice==2&&type.equals(PizzaType.NON_VEG)){
+		 choice=6;
+	 }else if(choice==3&&type.equals(PizzaType.NON_VEG)){
+		 choice=7;
+	 }else if(choice==4&&type.equals(PizzaType.NON_VEG)){
+		 choice=8;
+	 }
+	 return choice;
+	}
+
+
 	private static Pizza pizzaOrder(){
 		 choice=sc.nextInt();
-		 switch(choice){
-			 case 1:if(type.equals(PizzaType.VEG))newToppings=toppings.subList(0,4);else newToppings=toppings.subList(8,11);break;
-			 case 2:if(type.equals(PizzaType.VEG))newToppings=toppings.subList(2,6);else newToppings=toppings.subList(9,12);break;
-			 case 3:if(type.equals(PizzaType.VEG))newToppings=toppings.subList(1,5);else newToppings=toppings.subList(10,13);break;
-			 case 4:if(type.equals(PizzaType.VEG))newToppings=toppings.subList(3,7);else newToppings=toppings.subList(9,13);break;
-			 default:System.out.println("Please choose correct option");
-			 		pizzaOrder();
-		 }
-		 if(choice==1&&type.equals(PizzaType.NON_VEG)){
-			 choice=5;
-		 }else if(choice==2&&type.equals(PizzaType.NON_VEG)){
-			 choice=6;
-		 }else if(choice==3&&type.equals(PizzaType.NON_VEG)){
-			 choice=7;
-		 }else if(choice==4&&type.equals(PizzaType.NON_VEG)){
-			 choice=8;
-		 }
-		
+		 choice=loadNewToppings(choice);
 		 customizeTopping(newToppings);
 		 crust=getCrustType();
 		 size=getPizzaSize();
@@ -90,8 +115,24 @@ public class PizzahutApp {
 		alternateTopping.add(new Topping("e",PizzaType.VEG));
 		return alternateTopping;
 	}
-	
+	private static Map<CrustType, Double> loadCrustRates() {
+		Map<CrustType, Double> map = new HashMap<>();
+		map.put(CrustType.CHEESEBURST, 66.66);
+		map.put(CrustType.HANDTOAST, 50.50);
+		map.put(CrustType.THICKCRUST, 25.00);
+		map.put(CrustType.THINCRUST, 43.40);
+		return map;
+	}
+	private static Map<PizzaSize, Double> loadPizzaSizeRates() {
+		Map<PizzaSize, Double> map = new HashMap<>();
+		map.put(PizzaSize.LARGE, 66.66);
+		map.put(PizzaSize.MEDIUM, 50.50);
+		map.put(PizzaSize.REGULAR, 25.00);
+		return map;
+	}
+
 	private static void showPizzaList(PizzaType type){
+	
 		if(type.equals(PizzaType.VEG)){
 			System.out.print("1."+pizzaList().get(0) +"\t\tToppings");
 			System.out.println(toppings.subList(0,4));
@@ -287,40 +328,43 @@ public class PizzahutApp {
 }
 
 
-------------------------------------------------------------------------------------------------------------
+-------------------------------------------------------------------------------------------------------------------------
 
 package com.pizzahut.model;
-import java.util.concurrent.ThreadLocalRandom;
-public class Order {
 
-	public String name;
-	public String orderId;
+
+public class Topping {
+	private String name;
+	private PizzaType type;
 	
-	public Order(String name) {
+	public Topping(String name, PizzaType type) {
 		super();
-		this.name = name;
-		this.orderId =String.valueOf(ThreadLocalRandom.current().nextInt(1,1000));
+		this.name=name;
+		this.type = type;
 	}
 	public String getName() {
 		return name;
 	}
 
+
 	public void setName(String name) {
 		this.name = name;
 	}
 
-	public String getOrderId() {
-		return orderId;
-	}
-
-	public void setOrderId(String orderId) {
-		this.orderId = orderId;
-	}
 	
+	public PizzaType getType() {
+		return type;
+	}
+	public void setType(PizzaType type) {
+		this.type = type;
+	}
+	public String toString(){
+		return name;
+	}
 }
 
 
--------------------------------------------------------------------------------------------------------------
+
 
 package com.pizzahut.model;
 
@@ -341,6 +385,7 @@ public class Pizza {
 		this.crust=crust;
 		this.size=size;
 	}
+	
 	public CrustType getCrust() {
 		return crust;
 	}
@@ -386,61 +431,47 @@ public class Pizza {
 
 }
 
--------------------------------------------------------------------------------------------------------------
+
 
 package com.pizzahut.model;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.ThreadLocalRandom;
+public class Order {
 
-public enum PizzaType {
-	VEG,NON_VEG;
-}
-
-----------------------------------------------------------------------------------------------------
-
-package com.pizzahut.model;
-
-
-public class Topping {
-	private String name;
-	private PizzaType type;
+	public String name;
+	public String orderId;
+	private List<Pizza> pizzaList;
 	
-	public Topping(String name, PizzaType type) {
+	public Order(String name) {
 		super();
-		this.name=name;
-		this.type = type;
+		this.name = name;
+		this.orderId =String.valueOf(ThreadLocalRandom.current().nextInt(1,1000));
 	}
 	public String getName() {
 		return name;
 	}
 
-
 	public void setName(String name) {
 		this.name = name;
 	}
 
+	public String getOrderId() {
+		return orderId;
+	}
+	public List<Pizza> getPizzaList() {
+		if(null == pizzaList)
+		{
+			pizzaList = new ArrayList<>();
+		}
+		return pizzaList;
+	}
 	
-	public PizzaType getType() {
-		return type;
+	public void setOrderId(String orderId) {
+		this.orderId = orderId;
 	}
-	public void setType(PizzaType type) {
-		this.type = type;
-	}
-	public String toString(){
-		return name;
-	}
+	
 }
 
-----------------------------------------------------------------------------------------------------------
 
-package com.pizzahut.model;
 
-public enum PizzaSize {
-	REGULAR,MEDIUM,LARGE;
-}
-
-----------------------------------------------------------------------------------------------------------
-
-package com.pizzahut.model;
-
-public enum CrustType {
-	CHEESEBURST,THICKCRUST,THINCRUST,HANDTOAST;
-}
